@@ -2,6 +2,7 @@ package com.fiora.note2.controller;
 
 import com.fiora.note2.dao.NetDiskRepository;
 import com.fiora.note2.model.NetDisk;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,19 +20,25 @@ public class APIController {
     @Autowired
     private NetDiskRepository netDiskRepository;
 
-    @RequestMapping(value = "/netDisk", method = RequestMethod.GET)
-    public ResponseEntity<List<NetDisk>> queryNetDisk(@RequestParam("filter") String filter, @RequestParam("token") String token) {
-        if (!"fiora221".equals(token)) {
-            return ResponseEntity.badRequest().build();
-        }
+    @RequiresPermissions("api:select")
+    @RequestMapping(value = "/netDisk", method = RequestMethod.POST)
+    public ResponseEntity<List<NetDisk>> queryNetDisk(@RequestParam("filter") String filter) {
         return ResponseEntity.ok(netDiskRepository.findByNameOrPath("蜀绣"));
     }
 
-    @RequestMapping(value = "/string", method = RequestMethod.GET)
-    public ResponseEntity<List<String>> queryStringList(@RequestParam("filter") String filter, @RequestParam("token") String token) {
-        if (!"fiora221".equals(token)) {
-            return ResponseEntity.badRequest().build();
-        }
+    @RequiresPermissions("api:select")
+    @RequestMapping(value = "/string", method = RequestMethod.POST)
+    public ResponseEntity<List<NetDisk>> queryStringList(@RequestParam("filter") String filter) {
+        List<NetDisk> list = new ArrayList<>();
+        NetDisk n1 = new NetDisk("name1","path1");
+        NetDisk n2 = new NetDisk("name2","path2");
+        NetDisk n3 = new NetDisk("name3","path3");
+        list.add(n1);list.add(n2);list.add(n3);
+        return ResponseEntity.ok(list);
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public ResponseEntity<List<String>> test() {
         List<String> list = new ArrayList<>();
         list.add("111");
         list.add("222");

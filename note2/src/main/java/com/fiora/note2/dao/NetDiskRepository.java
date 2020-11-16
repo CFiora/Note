@@ -14,3 +14,4 @@ public interface NetDiskRepository extends JpaRepository<NetDisk, Long> {
     @Query(nativeQuery = true, value="select * from net_disk where name like '%:filter%' or path like '%:filter%'")
     public List<NetDisk> findByNameOrPath(@Param("filter") String filter);
 }
+ 

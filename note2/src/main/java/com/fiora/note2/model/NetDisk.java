@@ -1,5 +1,6 @@
 package com.fiora.note2.model;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +10,12 @@ import javax.persistence.Table;
 @Entity
 @Table(name="net_disk")
 @Data
+@NoArgsConstructor
 public class NetDisk {
+    public NetDisk(String name, String path) {
+        this.name = name;
+        this.path = path;
+    }
     @Id
     @Column(name = "code")
     private String code;
