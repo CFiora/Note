@@ -23,25 +23,28 @@ public class APIController {
     @RequiresPermissions("api:select")
     @RequestMapping(value = "/netDisk", method = RequestMethod.POST)
     public ResponseEntity<List<NetDisk>> queryNetDisk(@RequestParam("filter") String filter) {
-        return ResponseEntity.ok(netDiskRepository.findByNameOrPath("蜀绣"));
+        return ResponseEntity.ok(netDiskRepository.findByNameOrPath(filter));
     }
 
     @RequiresPermissions("api:select")
     @RequestMapping(value = "/string", method = RequestMethod.POST)
-    public ResponseEntity<List<NetDisk>> queryStringList(@RequestParam("filter") String filter) {
+    public ResponseEntity<List<String>> queryStringList(@RequestParam("filter") String filter) {
+        List<NetDisk> list = netDiskRepository.findByNameOrPath(filter);
+        List<String> result = new ArrayList<>();
+        StringBuffer sb = new StringBuffer("");
+        for (NetDisk netDisk:list ) {
+            result.add(netDisk.getPath()+netDisk.getName()+"=====");
+        }
+        return ResponseEntity.ok(result);
+    }
+
+    @RequestMapping(value = "/test", method = RequestMethod.GET)
+    public ResponseEntity<List<NetDisk>> test() {
         List<NetDisk> list = new ArrayList<>();
         NetDisk n1 = new NetDisk("name1","path1");
         NetDisk n2 = new NetDisk("name2","path2");
         NetDisk n3 = new NetDisk("name3","path3");
         list.add(n1);list.add(n2);list.add(n3);
-        return ResponseEntity.ok(list);
-    }
-
-    @RequestMapping(value = "/test", method = RequestMethod.GET)
-    public ResponseEntity<List<String>> test() {
-        List<String> list = new ArrayList<>();
-        list.add("111");
-        list.add("222");
         return ResponseEntity.ok(list);
     }
 }
