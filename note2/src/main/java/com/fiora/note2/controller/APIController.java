@@ -20,21 +20,28 @@ public class APIController {
     private NetDiskRepository netDiskRepository;
 
     @RequestMapping(value = "/netDisk", method = RequestMethod.GET)
-    public ResponseEntity<List<NetDisk>> queryNetDisk(@RequestParam("filter") String filter, @RequestParam("token") String token) {
+    public ResponseEntity<List<String>> queryNetDisk(@RequestParam("filter") String filter, @RequestParam("token") String token) {
         if (!"fiora221".equals(token)) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(netDiskRepository.findByNameOrPath("蜀绣"));
+        List<NetDisk> list = netDiskRepository.findByNameOrPath(filter);
+        List<String> result = new ArrayList<>();
+        for (NetDisk netDisk:list ) {
+            result.add(netDisk.getPath()+netDisk.getName());
+        }
+        return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/string", method = RequestMethod.GET)
-    public ResponseEntity<List<String>> queryStringList(@RequestParam("filter") String filter, @RequestParam("token") String token) {
+    public ResponseEntity<String> queryStringList(@RequestParam("filter") String filter, @RequestParam("token") String token) {
         if (!"fiora221".equals(token)) {
             return ResponseEntity.badRequest().build();
         }
-        List<String> list = new ArrayList<>();
-        list.add("111");
-        list.add("222");
-        return ResponseEntity.ok(list);
+        List<NetDisk> list = netDiskRepository.findByNameOrPath(filter);
+        StringBuffer sb = new StringBuffer("");
+        for (NetDisk netDisk:list ) {
+            sb.append(netDisk.getPath()+netDisk.getName()+"=====");
+        }
+        return ResponseEntity.ok(sb.toString());
     }
 }
