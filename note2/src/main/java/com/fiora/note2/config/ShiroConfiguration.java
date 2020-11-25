@@ -60,6 +60,7 @@ public class ShiroConfiguration {
         shiroFilterFactoryBean.setLoginUrl("/note00_catalogue.html");
         shiroFilterFactoryBean.setUnauthorizedUrl("../note00_catalogue.html");
         Map<String, String> filterChainDefinitionMap = new HashMap<>();
+        filterChainDefinitionMap.put("/api/excel","anon");
         filterChainDefinitionMap.put("/login.html","anon");
         filterChainDefinitionMap.put("/note00_catalogue.html","anon");
         filterChainDefinitionMap.put("/note01_Java.html","anon");
