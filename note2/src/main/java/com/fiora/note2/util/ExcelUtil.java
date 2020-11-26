@@ -2,10 +2,7 @@ package com.fiora.note2.util;
 
 import com.fiora.note2.model.NetDisk1;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DateUtil;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileInputStream;
@@ -14,7 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ExcelUtil {
-    //读取excel
+    //读取excel 小文件
     public static Workbook readExcel(String filePath){
         Workbook wb = null;
         if(filePath==null){
