@@ -1,15 +1,16 @@
 package com.fiora.note2.model;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="net_disk")
+@Table(name="net_disk_1")
 @Data
 @NoArgsConstructor
-public class NetDisk {
-    public NetDisk(String name, String path) {
+public class NetDisk1 {
+    public NetDisk1(String name, String path) {
         this.name = name;
         this.path = path;
     }

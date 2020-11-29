@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 public interface NetDiskRepository extends JpaRepository<NetDisk, Long> {
 
-    @Query(nativeQuery = true, value="select * from net_disk where name like CONCAT('%',:filter,'%') or path like CONCAT('%',:filter,'%')")
+    @Query(nativeQuery = true, value="select * from net_disk where directory = 0 " +
+            "and (name like CONCAT('%',:filter,'%') or path like CONCAT('%',:filter,'%')) " +
+            "order by path")
     public List<NetDisk> findByNameOrPath(@Param("filter") String filter);
 }
  

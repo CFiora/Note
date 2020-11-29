@@ -1,5 +1,6 @@
 package com.fiora.note2.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.mgt.DefaultSecurityManager;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
+@Slf4j
 public class LogController {
     @Autowired
     private DefaultSecurityManager defaultSecurityManager;
@@ -22,17 +24,18 @@ public class LogController {
         SecurityUtils.setSecurityManager(defaultSecurityManager);
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.GET)
-    public ModelAndView login(String username, String password) {
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(String username, String password) {
+        log.debug("log in...");
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, password);
         try {
             subject.login(token);
-            ModelAndView mav = new ModelAndView("/netDiskSearch.html");
-            return mav;
+            log.debug("log in success");
+            return "redirect:/note01_Java.html";
         } catch (Exception e) {
-            ModelAndView mav = new ModelAndView("/note00_catalogue.html");
-            return mav;
+            log.debug("log in fail");
+            return "redirect:/note00_catalogue.html";
         }
     }
 
