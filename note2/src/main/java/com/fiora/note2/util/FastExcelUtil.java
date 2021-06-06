@@ -1,16 +1,28 @@
 package com.fiora.note2.util;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+import org.dhatim.fastexcel.reader.Cell;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
+import org.elasticsearch.common.recycler.Recycler;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class FastExcelUtil {
     private static String filePathPrefix = "D:\\1500T\\";
@@ -27,7 +39,63 @@ public class FastExcelUtil {
     private static int batchSize = 10000;
 
     public static void main(String[] args) {
-        bigExcel2DB();
+//        simpleTest();
+    }
+
+    private static void countSize() {
+        String filePathPrefix = "D:\\百度网盘目录\\";
+        String[] files = {"小九-图书.xlsx", "小九-知识付费.xlsx", "防爆文件夹.xlsx"};
+        JSONArray resultJson = new JSONArray();
+        for (String file : files) {
+            JSONObject fileJson = new JSONObject();
+            fileJson.put("文件名", file);
+            int total = 0; BigDecimal unit = BigDecimal.valueOf(1024);
+            BigDecimal kb = BigDecimal.ZERO;BigDecimal mb = BigDecimal.ZERO;BigDecimal gb = BigDecimal.ZERO;
+            try (InputStream is = new FileInputStream(filePathPrefix + file); ReadableWorkbook wb = new ReadableWorkbook(is)) {
+                BigDecimal skb = BigDecimal.ZERO;BigDecimal smb = BigDecimal.ZERO;BigDecimal sgb = BigDecimal.ZERO;
+                long sheets = wb.getSheets().count();
+                JSONArray data = new JSONArray();
+                for(long j=0;j<sheets; j++) {
+                    Optional<Sheet> optional = wb.getSheet(Long.valueOf(j).intValue());
+                    Sheet sheet = optional.get();
+                    JSONObject sheetData = new JSONObject();
+                    sheetData.put("sheet名称", sheet.getName());
+                    List<Row> rows = sheet.read();
+                    if (rows.size() == 0) {
+                        sheetData.put("大小(MB)", 0);
+                        sheetData.put("数量", 0);
+                        continue;
+                    }
+                    total += rows.size();
+                    for (int i = 2; i < rows.size(); i++) {
+                        System.out.println("文件" + file + "第" + (i + 1) + "行记录,总数第" + rows.size() + "行记录");
+                        String strSize = rows.get(i).getCell(3).getText();
+                        if(strSize.endsWith("kb")) {
+                            kb = kb.add(BigDecimal.valueOf(Double.valueOf(strSize.replace("kb",""))));
+                            skb = skb.add(BigDecimal.valueOf(Double.valueOf(strSize.replace("kb",""))));
+                        } else if (strSize.endsWith("M")) {
+                            mb = mb.add(BigDecimal.valueOf(Double.valueOf(strSize.replace("M",""))));
+                            smb = smb.add(BigDecimal.valueOf(Double.valueOf(strSize.replace("M",""))));
+                        } else if (strSize.endsWith("G")) {
+                            gb = gb.add(BigDecimal.valueOf(Double.valueOf(strSize.replace("G",""))));
+                            sgb = sgb.add(BigDecimal.valueOf(Double.valueOf(strSize.replace("G",""))));
+                        }
+                    }
+                    BigDecimal sResult = sgb.multiply(unit).add(smb).add(skb.divide(unit, RoundingMode.HALF_UP));
+                    sheetData.put("大小(MB)", sResult.toString());
+                    sheetData.put("数量", rows.size());
+                    data.add(sheetData);
+                }
+                BigDecimal result = gb.multiply(unit).add(mb).add(kb.divide(unit, RoundingMode.HALF_UP));
+                fileJson.put("data",data);
+                fileJson.put("大小（MB）",result.toString());
+                fileJson.put("文件数量", total);
+                resultJson.add(fileJson);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println(resultJson);
     }
 
     private static void bigExcel2DB() {
@@ -42,7 +110,6 @@ public class FastExcelUtil {
                     Sheet sheet = wb.getFirstSheet();
                     List<Row> rows = sheet.read();
                     for (int i = 2; i < rows.size(); i++) {
-//                    for (int i = 2; i < 3050; i++) {
                         total++;
                         System.out.println("文件" + file + "第" + (i + 1) + "行记录,总数第" + total + "行记录");
                         Row row = rows.get(i);
@@ -75,11 +142,50 @@ public class FastExcelUtil {
         }
     }
 
+    public static <T> List<T> getListFromExcel(String filePath, Class<T> clazz) {
+        List<T> list = new ArrayList<>();
+        try (InputStream is = new FileInputStream(filePath); ReadableWorkbook wb = new ReadableWorkbook(is)) {
+            Sheet sheet = wb.getFirstSheet();
+            List<Row> rows = sheet.read();
+            Row title = rows.get(0);
+            List<String> fields =title.stream().map((cell) -> cell.getText()).filter(field -> !field.trim().isEmpty()).collect(Collectors.toList());
+            System.out.println(fields);
+            for (int i = 2; i < rows.size(); i++) {
+                Row row = rows.get(i);
+                int columns = fields.size();
+                T instance = clazz.newInstance();
+                boolean ifAddedToList = false;
+                for(int j = 0; j < columns; j++) {
+                    Object value = null;
+                    try {
+                        Cell cell = row.getCell(j);
+                        value = cell.getValue();
+                    } catch (Exception e) {
+                        // Do nothing
+                    }
+                    if (value != null) {
+                        ifAddedToList = true;
+                    }
+                    String field = fields.get(j);
+                    Field f = instance.getClass().getDeclaredField(field);
+                    f.setAccessible(true);
+                    f.set(instance, value);
+                }
+                if(ifAddedToList) {
+                    list.add(instance);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 
     private static void simpleTest() {
-        String filePathPrefix = "D:\\1500T\\";
+        String filePathPrefix = "D:\\百度网盘目录\\";
 //        String[] files = {"图书0.xlsx","音乐0.xlsx"};
-        String file = "图书0.xlsx";
+        String file = "防爆文件夹.xlsx";
         try (InputStream is = new FileInputStream(filePathPrefix + file); ReadableWorkbook wb = new ReadableWorkbook(is)) {
             Sheet sheet = wb.getFirstSheet();
             List<Row> rows = sheet.read();
@@ -96,13 +202,6 @@ public class FastExcelUtil {
             printOut(rowl2);
             Row rowl1 = rows.get(rows.size() - 1);
             printOut(rowl1);
-
-//            try (Stream<Row> rows = sheet.openStream()) {
-//                rows.forEach(r -> {
-//                    System.out.println(r.getCellCount());
-//                });
-//            }
-
 
         } catch (IOException e) {
             e.printStackTrace();
