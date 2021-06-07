@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.fiora.note2.model.JobInfo;
 import com.fiora.note2.util.HttpUtils;
 import com.fiora.note2.util.SalaryUtil;
+import com.fiora.note2.util.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,13 @@ public class JobProcessor51Job implements PageProcessor {
 
     @Override
     public void process(Page page) {
+        log.info("URL -> " + page.getUrl().get());
         String html = page.getHtml().toString();
         int indexOfResult = html.indexOf("window.__SEARCH_RESULT__");
         if (indexOfResult != -1) {
             //列表页
             String subHtml = html.substring(indexOfResult);
             String jsonStr = subHtml.substring(0, subHtml.indexOf("</script>")).replace("window.__SEARCH_RESULT__ = ", "");
-            log.info(jsonStr);
             JSONObject json = JSONObject.parseObject(jsonStr);
             JSONArray auctionAds = json.getJSONArray("auction_ads");
             for (Object obj : auctionAds) {
@@ -70,8 +71,7 @@ public class JobProcessor51Job implements PageProcessor {
                 .setRetrySleepTime(3000);
     }
 
-//    @Scheduled(cron = "0 0 1 * * ?")
-    @Scheduled(initialDelay = 100L, fixedDelay = 1000000L)
+    @Scheduled(cron = "0 0 1 * * ?")
     public void process() {
         int totalPage = getTotalPage();
         List<String> urls = new ArrayList<>();
@@ -80,7 +80,6 @@ public class JobProcessor51Job implements PageProcessor {
         }
 
         Spider.create(new JobProcessor51Job())
-//                .addUrl(urls.get(0))
                 .addUrl(urls.toArray(new String[urls.size()]))
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(100000)))
                 .addPipeline(this.springDataPipeline)
@@ -93,28 +92,27 @@ public class JobProcessor51Job implements PageProcessor {
         JobInfo jobInfo = new JobInfo();
         Html html = page.getHtml();
         String companyName = html.css("div.cn p.cname a", "text").get();
-        jobInfo.setCompanyName(companyName);
+        jobInfo.setCompanyName(StringUtils.gbk2uft8(companyName));
         if (html.css("div.bmsg").nodes().size() > 1) {
-            jobInfo.setCompanyAddr(Jsoup.parse(html.css("div.bmsg").nodes().get(1).toString()).text()
-                    .replace("上班地址：","").replace(" 地图",""));
+            jobInfo.setCompanyAddr(StringUtils.gbk2uft8(Jsoup.parse(html.css("div.bmsg").nodes().get(1).toString()).text()
+                    .replace("上班地址：","").replace(" 地图","")));
         }
-        jobInfo.setCompanyInfo(Jsoup.parse(html.css("div.tmsg").toString()).text());
-        jobInfo.setJobName(html.css("div.cn h1", "text").get());
+        jobInfo.setCompanyInfo(StringUtils.gbk2uft8(Jsoup.parse(html.css("div.tmsg").toString()).text().replace("微信分享", "")));
+        jobInfo.setJobName(StringUtils.gbk2uft8(html.css("div.cn h1", "text").get()));
         String jobAddr = html.css("div.cn p.msg", "text").get();
-        jobInfo.setJobAddr(jobAddr);
-        jobInfo.setJobInfo(Jsoup.parse(html.css("div.job_msg").toString()).text());
+        jobInfo.setJobAddr(StringUtils.gbk2uft8(jobAddr));
+        jobInfo.setJobInfo(StringUtils.gbk2uft8(Jsoup.parse(html.css("div.job_msg").toString()).text()));
         String salaryInfo = html.css("div.cn strong", "text").get();
         if (!ObjectUtils.isEmpty(salaryInfo)) {
             Object[] result = SalaryUtil.getIntervalAndSalaryRange(salaryInfo);
-            jobInfo.setSalaryUnit((String) result[0]);
+            jobInfo.setSalaryUnit(StringUtils.gbk2uft8((String) result[0]));
             jobInfo.setSalaryMin(Integer.parseInt((String) result[1]));
             jobInfo.setSalaryMax(Integer.parseInt((String) result[2]));
         }
-        jobInfo.setUrl(page.getUrl().get());
+        jobInfo.setUrl(StringUtils.gbk2uft8(page.getUrl().get()));
         String hasTime = jobAddr.split("发布")[0];
         String time = hasTime.substring(hasTime.length()-5);
-        jobInfo.setTime(time);
-        log.info("jobInfo -> " + jobInfo);
+        jobInfo.setTime(StringUtils.gbk2uft8(time));
         page.putField("jobInfo", jobInfo);
     }
 
@@ -141,7 +139,6 @@ public class JobProcessor51Job implements PageProcessor {
             urls.add(URL.replace(marker,i+""));
         }
         Spider.create(new JobProcessor51Job())
-//                .addUrl(urls.toArray(new String[urls.size()]))
                 .addUrl(urls.get(0))
                 .setScheduler(new QueueScheduler().setDuplicateRemover(new BloomFilterDuplicateRemover(100000)))
                 .thread(10)
