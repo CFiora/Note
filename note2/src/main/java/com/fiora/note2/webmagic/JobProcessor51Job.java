@@ -20,6 +20,7 @@ import us.codecraft.webmagic.scheduler.BloomFilterDuplicateRemover;
 import us.codecraft.webmagic.scheduler.QueueScheduler;
 import us.codecraft.webmagic.selector.Html;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,27 +93,29 @@ public class JobProcessor51Job implements PageProcessor {
         JobInfo jobInfo = new JobInfo();
         Html html = page.getHtml();
         String companyName = html.css("div.cn p.cname a", "text").get();
-        jobInfo.setCompanyName(StringUtils.gbk2uft8(companyName));
+        jobInfo.setCompanyName(companyName);
         if (html.css("div.bmsg").nodes().size() > 1) {
-            jobInfo.setCompanyAddr(StringUtils.gbk2uft8(Jsoup.parse(html.css("div.bmsg").nodes().get(1).toString()).text()
-                    .replace("上班地址：","").replace(" 地图","")));
+            jobInfo.setCompanyAddr(Jsoup.parse(html.css("div.bmsg").nodes().get(1).toString()).text()
+                    .replace("上班地址：","").replace(" 地图",""));
         }
-        jobInfo.setCompanyInfo(StringUtils.gbk2uft8(Jsoup.parse(html.css("div.tmsg").toString()).text().replace("微信分享", "")));
-        jobInfo.setJobName(StringUtils.gbk2uft8(html.css("div.cn h1", "text").get()));
+        jobInfo.setCompanyInfo(Jsoup.parse(html.css("div.tmsg").toString()).text().replace("微信分享", ""));
+        jobInfo.setJobName(html.css("div.cn h1", "text").get());
         String jobAddr = html.css("div.cn p.msg", "text").get();
-        jobInfo.setJobAddr(StringUtils.gbk2uft8(jobAddr));
-        jobInfo.setJobInfo(StringUtils.gbk2uft8(Jsoup.parse(html.css("div.job_msg").toString()).text()));
+        jobInfo.setJobAddr(jobAddr);
+        jobInfo.setJobInfo(Jsoup.parse(html.css("div.job_msg").toString()).text());
         String salaryInfo = html.css("div.cn strong", "text").get();
         if (!ObjectUtils.isEmpty(salaryInfo)) {
             Object[] result = SalaryUtil.getIntervalAndSalaryRange(salaryInfo);
-            jobInfo.setSalaryUnit(StringUtils.gbk2uft8((String) result[0]));
+            jobInfo.setSalaryUnit((String) result[0]);
             jobInfo.setSalaryMin(Integer.parseInt((String) result[1]));
             jobInfo.setSalaryMax(Integer.parseInt((String) result[2]));
         }
-        jobInfo.setUrl(StringUtils.gbk2uft8(page.getUrl().get()));
+        jobInfo.setUrl(page.getUrl().get());
         String hasTime = jobAddr.split("发布")[0];
         String time = hasTime.substring(hasTime.length()-5);
-        jobInfo.setTime(StringUtils.gbk2uft8(time));
+        jobInfo.setTime(time);
+        jobInfo.setCreateTime(LocalDateTime.now());
+//        log.info("jobInfo -> " + jobInfo);
         page.putField("jobInfo", jobInfo);
     }
 
