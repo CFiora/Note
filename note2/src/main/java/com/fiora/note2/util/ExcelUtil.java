@@ -1,6 +1,6 @@
 package com.fiora.note2.util;
 
-import com.fiora.note2.model.NetDisk1;
+import com.fiora.note2.model.NetDisk;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -79,7 +79,7 @@ public class ExcelUtil {
 //        return cellValue;
 //    }
 
-    public static void assignNetDisk(NetDisk1 net, Row row) {
+    public static void assignNetDisk(NetDisk net, Row row) {
         //获取最大列数
         // int colnum = row.getPhysicalNumberOfCells();
         // String columns[] = {"文件编码", "文件名称", "文件路径", "文件md5", "大小", "修改时间"};
