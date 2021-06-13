@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -25,4 +26,5 @@ public class JobInfo implements Serializable {
     private String salaryUnit;
     private String url;
     private String time;
+    private LocalDateTime createTime;
 }
