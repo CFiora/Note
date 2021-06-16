@@ -1,11 +1,20 @@
 package com.fiora.note2.elastic;
 
+import com.fiora.note2.dao.NetDiskESRepository;
+import com.fiora.note2.model.NetDisk;
 import net.sf.json.JSONObject;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
+import org.elasticsearch.search.sort.ScoreSortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +30,33 @@ import static java.nio.file.StandardOpenOption.APPEND;
 
 @SpringBootTest
 public class ESTest2 {
+
+    @Autowired
+    private NetDiskESRepository repository;
+
+    @Test
+    public void pageTest() {
+        String filter = "公务员";
+        List<Sort.Order> orders = new ArrayList();
+        orders.add(new Sort.Order(Sort.Direction.DESC,"_score"));
+        for (int i = 0; i < 4; i++) {
+            Page<NetDisk> page = repository.findByNameLikeOrPathLike(filter, filter, PageRequest.of(i, 30,  Sort.by(orders)));
+            List<NetDisk> list = page.getContent();
+            list.forEach(netDisk -> System.out.println(netDisk.toString()));
+            System.out.println();
+        }
+    }
+
+    @Test
+    public void select() {
+        Iterable<NetDisk> all = repository.findAll();
+        all.forEach(netDisk -> System.out.println(netDisk.toString()));
+    }
+
+    @Test
+    public void deleteAll() {
+        repository.deleteAll();
+    }
 
     @Test
     public void addData() throws IOException {

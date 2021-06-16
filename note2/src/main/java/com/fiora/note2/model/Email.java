@@ -9,12 +9,11 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-public class User {
+public class Email {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private String pass;
-    private String email;
-    private String tel;
+    private String title;
+    private String content;
 }

@@ -6,15 +6,15 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
-public class User {
+public class EmailRecord {
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO)
     private Long id;
-    private String name;
-    private String pass;
-    private String email;
-    private String tel;
+    private Long emailId;
+    private Long userId;
+    private LocalDateTime createTime;
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alicloud.openservices.tablestore.SyncClient;
 import com.alicloud.openservices.tablestore.model.*;
 import com.alicloud.openservices.tablestore.model.search.*;
+import com.alicloud.openservices.tablestore.model.search.analysis.SingleWordAnalyzerParameter;
 import com.alicloud.openservices.tablestore.model.search.query.BoolQuery;
 import com.alicloud.openservices.tablestore.model.search.query.MatchQuery;
 import com.alicloud.openservices.tablestore.model.search.sort.ScoreSort;
@@ -57,11 +58,11 @@ public class TableStoreTest {
         IndexSchema indexSchema = new IndexSchema();
         indexSchema.setFieldSchemas(Arrays.asList(
                 new FieldSchema("name", FieldType.TEXT) //设置字段名称和类型。
-                        .setIndex(true).setAnalyzer(FieldSchema.Analyzer.MinWord),
+                        .setIndex(true).setAnalyzer(FieldSchema.Analyzer.SingleWord)
+                        .setAnalyzerParameter(new SingleWordAnalyzerParameter(false, true)),
                 new FieldSchema("path", FieldType.TEXT) //设置字段名称和类型。
-                        .setIndex(true).setAnalyzer(FieldSchema.Analyzer.MinWord),
-                new FieldSchema("size", FieldType.KEYWORD) //设置字段名称和类型。
-                        .setIndex(true)
+                        .setIndex(true).setAnalyzer(FieldSchema.Analyzer.SingleWord)
+                        .setAnalyzerParameter(new SingleWordAnalyzerParameter(false, true))
         ));
 
         indexRequest.setIndexSchema(indexSchema);

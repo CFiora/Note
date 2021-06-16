@@ -76,7 +76,8 @@ public class TableStoreServiceImpl implements TableStoreService {
             netDisk.setName(row.getColumn("name").get(0).getValue().asString());
             netDisk.setPath(row.getColumn("path").get(0).getValue().asString());
             netDisk.setSize(row.getColumn("size").get(0).getValue().asString());
-            netDisk.setId(row.getPrimaryKey().getPrimaryKeyColumn("id_md5").getValue().asString());
+            netDisk.setId(Long.valueOf(row.getPrimaryKey().getPrimaryKeyColumn("id_md5").getValue().asLong()).intValue());
+//            netDisk.setId(row.getPrimaryKey().getPrimaryKeyColumn("id_md5").getValue().asString());
             list.add(netDisk);
         }
         page.setResult(list);
