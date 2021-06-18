@@ -27,8 +27,9 @@ public class YiRenZhiXiaUpdate implements PageProcessor {
         String subSpan = span.replace("</span>","");
         String dateStr = subSpan.substring(subSpan.indexOf(">") + 1);
         String today = sf.format(new Date());
+        log.info("today -> " + today);
         if(today.equals(dateStr)) {
-            log.info("today -> " + today);
+            // log.info("today -> " + today);
             page.putField("update", "YiRenZhiXia");
         }
     }
