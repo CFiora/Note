@@ -48,7 +48,7 @@ public class EmailService {
             return;
         }
         List<EmailUser> emailUserList = emailUserRepository.findByEmailId(email.getId());
-        if ( emailUserList == null || emailRecordList.size() == 0) {
+        if ( emailUserList == null || emailUserList.size() == 0) {
             log.error("Error getting userId with emailId {} today ", email.getId());
             return ;
         }
