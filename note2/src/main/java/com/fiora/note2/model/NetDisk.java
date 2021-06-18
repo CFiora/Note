@@ -8,13 +8,14 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
+import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Document(indexName = "netdisk-index")
-public class NetDisk {
+public class NetDisk implements Serializable {
     public NetDisk(String name, String path) {
         this.name = name;
         this.path = path;
