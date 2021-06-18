@@ -42,7 +42,7 @@ public class YiRenZhiXiaUpdate implements PageProcessor {
                 .setRetrySleepTime(3000);
     }
 
-    @Scheduled(cron = "0 0/30 * ? * FRI")
+    @Scheduled(cron = "0/30 * * ? * FRI")
     public void process() {
         Spider.create(new YiRenZhiXiaUpdate())
                 .addUrl(URL)
