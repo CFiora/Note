@@ -3,6 +3,7 @@ package com.fiora.note2.webmagic;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -14,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
+@Component
 public class HaiZeiWangUpdate implements PageProcessor {
     public static final String charSet = "utf-8";
     public static final String URL = "https://www.iqiyi.com/a_19rrhb3xvl.html";
