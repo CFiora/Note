@@ -60,18 +60,18 @@ public class ESTest2 {
 
     @Test
     public void addData() throws IOException {
-        int id = 15681866;
+        int id = 16418370;
         int batchSize = 30000;
 
         String filePathPrefix = "D:\\百度网盘目录\\";
-        String[] files = {"唯----库.xlsx"};//15699808
+        String[] files = {"免费课程分享群 2021.xlsx"};//16520666
         String jsonPrefix = "D:\\百度网盘目录\\json\\";
 
         for (String file : files) {
             try (InputStream is = new FileInputStream(filePathPrefix + file); ReadableWorkbook wb = new ReadableWorkbook(is)) {
                 long sheets = wb.getSheets().count();
                 for(long j=0;j<sheets; j++) {
-                    int sheetIndex = 1;
+                    int sheetIndex = Long.valueOf(j).intValue()+1;
                     Optional<Sheet> optional = wb.getSheet(Long.valueOf(j).intValue());
                     Sheet sheet = optional.get();
 

@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.fiora</groupId>
     <artifactId>note2</artifactId>
-    <version>1.0.0.2</version>
+    <version>1.0.0.3</version>
     <name>note2</name>
     <packaging>jar</packaging>
 
