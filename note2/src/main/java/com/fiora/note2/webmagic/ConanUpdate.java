@@ -1,4 +1,5 @@
 package com.fiora.note2.webmagic;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -7,18 +8,15 @@ import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.processor.PageProcessor;
-import us.codecraft.webmagic.scheduler.BloomFilterDuplicateRemover;
-import us.codecraft.webmagic.scheduler.QueueScheduler;
-import us.codecraft.webmagic.scheduler.component.HashSetDuplicateRemover;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Slf4j
 @Component
-public class YiRenZhiXiaUpdate implements PageProcessor {
+public class ConanUpdate implements PageProcessor {
     public static final String charSet = "utf-8";
-    public static final String URL = "https://ac.qq.com/Comic/ComicInfo/id/531490";
+    public static final String URL = "https://ac.qq.com/Comic/comicInfo/id/623654";
     private static final SimpleDateFormat sf = new SimpleDateFormat("yyyy.MM.dd");
     @Autowired
     private EmailDataPipeline emailDataPipeline;
@@ -31,7 +29,7 @@ public class YiRenZhiXiaUpdate implements PageProcessor {
         String today = sf.format(new Date());
         if(today.equals(dateStr)) {
             log.info("today -> " + today);
-            page.putField("update", "YiRenZhiXia");
+            page.putField("update", "Conan");
         }
     }
 
@@ -43,18 +41,11 @@ public class YiRenZhiXiaUpdate implements PageProcessor {
                 .setRetrySleepTime(3000);
     }
 
-    @Scheduled(cron = "0/30 * * ? * FRI")
+    @Scheduled(cron = "0 0/30 8-20 * * ?")
     public void process() {
-        Spider.create(new YiRenZhiXiaUpdate())
+        Spider.create(new ConanUpdate())
                 .addUrl(URL)
                 .addPipeline(this.emailDataPipeline)
-                .run();
-    }
-
-    public static void main(String[] args) {
-        Spider.create(new YiRenZhiXiaUpdate())
-                .addUrl(URL)
-                .setScheduler(new QueueScheduler().setDuplicateRemover(new HashSetDuplicateRemover()))
                 .run();
     }
 }

@@ -1,6 +1,5 @@
 package com.fiora.note2;
 
-import com.alicloud.openservices.tablestore.model.BatchWriteRowRequest;
 import org.dhatim.fastexcel.reader.ReadableWorkbook;
 import org.dhatim.fastexcel.reader.Row;
 import org.dhatim.fastexcel.reader.Sheet;
@@ -8,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -38,16 +36,16 @@ public class Data {
     }
 
     public static void main(String[] args) {
-        test2();
+//        test2();
     }
 
-    private static void test2() {
-        BatchWriteRowRequest batchWriteRowRequest  = new BatchWriteRowRequest();
-        System.out.println(batchWriteRowRequest);
-        if(true) {
-            batchWriteRowRequest  = new BatchWriteRowRequest();
-            System.out.println(batchWriteRowRequest);
-        }
-        System.out.println(batchWriteRowRequest);
-    }
+//    private static void test2() {
+//        BatchWriteRowRequest batchWriteRowRequest  = new BatchWriteRowRequest();
+//        System.out.println(batchWriteRowRequest);
+//        if(true) {
+//            batchWriteRowRequest  = new BatchWriteRowRequest();
+//            System.out.println(batchWriteRowRequest);
+//        }
+//        System.out.println(batchWriteRowRequest);
+//    }
 }

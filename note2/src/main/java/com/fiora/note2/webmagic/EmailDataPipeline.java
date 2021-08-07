@@ -22,6 +22,7 @@ public class EmailDataPipeline implements Pipeline {
             switch (update) {
                 case "YiRenZhiXia": emailService.sendEmail("YiRenZhiXia"); break;
                 case "HaiZeiWang": emailService.sendEmail("HaiZeiWang"); break;
+                case "Conan": emailService.sendEmail("Conan"); break;
                 default:
                     ;
             }

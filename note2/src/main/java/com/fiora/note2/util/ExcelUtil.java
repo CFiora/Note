@@ -25,12 +25,12 @@ public class ExcelUtil {
         //获取最大列数
         // int colnum = row.getPhysicalNumberOfCells();
         // String columns[] = {"文件编码", "文件名称", "文件路径", "文件md5", "大小", "修改时间"};
-        net.setCode((String) ExcelUtil.getCellFormatValue(row.getCell(0)));
+//        net.setCode((String) ExcelUtil.getCellFormatValue(row.getCell(0)));
         net.setName((String) ExcelUtil.getCellFormatValue(row.getCell(1)));
         net.setPath((String) ExcelUtil.getCellFormatValue(row.getCell(2)));
-        net.setMd5((String) ExcelUtil.getCellFormatValue(row.getCell(3)));
-        net.setSize((String) ExcelUtil.getCellFormatValue(row.getCell(4)));
-        net.setTime((String) ExcelUtil.getCellFormatValue(row.getCell(5)));
+//        net.setMd5((String) ExcelUtil.getCellFormatValue(row.getCell(3)));
+//        net.setSize((String) ExcelUtil.getCellFormatValue(row.getCell(4)));
+//        net.setTime((String) ExcelUtil.getCellFormatValue(row.getCell(5)));
     }
 
 }
